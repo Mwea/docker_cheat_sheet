@@ -336,16 +336,64 @@ Join a Swarm from docker machine
 
 ## Docker stack 
 
-Docker stack example 
+Deploy a stack
 
 ```bash
-
+docker stack deploy myfile.yml
 ```
 
-Deploy a stack 
+Docker stack example
 
 ```bash
-
+version: '3'
+services:
+  master:
+    container_name: master
+    image: gettyimages/spark:1.6.0-hadoop-2.6
+    command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master
+    hostname: master
+    ports:
+      - 4040:4040
+      - 6066:6066
+      - 7077:7077
+      - 8080:8080
+    expose:
+      - 7001
+      - 7002
+      - 7003
+      - 7004
+      - 7005
+      - 7006
+      - 7077
+      - 6066
+      - 8080
+      - "8081-8095"
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - node.role == manager
+  worker:
+    image: gettyimages/spark:1.6.0-hadoop-2.6
+    command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
+    expose:
+      - 7012
+      - 7013
+      - 7014
+      - 7015
+      - 7016
+      - 8081
+    ports:
+      - 8081
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == worker
+networks:
+  default:
+    driver: overlay
 ```
 
 Create a secret 
