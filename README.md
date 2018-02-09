@@ -344,7 +344,7 @@ docker stack deploy myfile.yml
 
 Docker stack example
 
-```bash
+```yaml
 version: '3'
 services:
   master:
